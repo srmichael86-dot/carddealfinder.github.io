@@ -1,48 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Card Deal Finder 🔍</title>
 
-    <!-- Load Styles -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            color: #2c3e50;
+        }
 
-    <!-- Load JavaScript -->
-    <script src="app.js" defer></script>
+        header {
+            background: #34495e;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 12px 18px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #219150;
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .results {
+            margin-top: 25px;
+        }
+
+        .card {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .deal-score {
+            display: inline-block;
+            background: #8e44ad;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .seller-score {
+            display: inline-block;
+            background: #2980b9;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            color: #7f8c8d;
+        }
+    </style>
 </head>
-
 <body>
-    <!-- HEADER -->
-    <header>
-        Card Deal Finder 🔍  
-    </header>
 
-    <!-- MAIN CONTENT -->
-    <div class="container">
-        <h2>Find undervalued sports cards instantly</h2>
+<header>Card Deal Finder 🔍</header>
 
-        <!-- SEARCH INPUT -->
-        <input 
-            id="query" 
-            type="text" 
-            placeholder="e.g. 2020 Prizm Silver Rookie"
-            value="2020 Prizm Silver Rookie"
-        />
+<div class="container">
 
-        <br>
+    <h2>Find undervalued sports cards instantly</h2>
 
-        <!-- SEARCH BUTTON -->
-        <button onclick="searchCards()">Search</button>
-
-        <!-- RESULTS AREA -->
-        <div id="results"></div>
+    <div class="search-box">
+        <input id="query" type="text" placeholder="2020 Prizm Silver Rookie" />
+        <button onclick="runSearch()">Search</button>
     </div>
 
-    <!-- FOOTER -->
-    <footer style="text-align:center; margin-top:30px; padding:15px; color:#777;">
-        © 2025 Card Deal Finder • Powered by eBay Public Data
-    </footer>
+    <div id="loading">Loading results…</div>
+
+    <div class="results" id="results"></div>
+
+</div>
+
+<footer>
+    © 2025 Card Deal Finder • Powered by eBay Public Data
+</footer>
+
+
+
+<script>
+async function runSearch() {
+
+    const query = document.getElementById("query").value.trim();
+    if (!query) return alert("Enter a search term");
+
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("results").innerHTML = "";
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/search?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        document.getElementById("loading").style.display = "none";
+
+        if (!data.results || data.results.length === 0) {
+            document.getElementById("results").innerHTML = "<p>No results found.</p>";
+            return;
+        }
+
+        let html = "";
+        data.results.forEach(card => {
+            html += `
+                <div class="card">
+                    <div class="title">
+                        ${card.title}
+                        <span class="deal-score">Deal Score: ${card.deal_score.toFixed(2)}</span>
+                        <span class="seller-score">Seller: ${card.seller_score}</span>
+                    </div>
+                    <p>Price: $${card.price}</p>
+                    <a href="${card.url}" target="_blank">View on eBay</a>
+                </div>
+            `;
+        });
+
+        document.getElementById("results").innerHTML = html;
+
+    } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("results").innerHTML = "<p style='color:red;'>Error loading results.</p>";
+        console.error(err);
+    }
+}
+</script>
 
 </body>
 </html>
