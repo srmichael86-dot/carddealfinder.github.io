@@ -1,141 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Card Deal Finder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Deal Finder 🔍</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f8;
-            margin: 0;
-            padding: 0;
-        }
+    <!-- Load Styles -->
+    <link rel="stylesheet" href="style.css">
 
-        header {
-            background: #1e1e2f;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-        }
-
-        #search-box {
-            max-width: 600px;
-            margin: 20px auto;
-            display: flex;
-            gap: 10px;
-        }
-
-        #query-input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 18px;
-        }
-
-        #search-btn {
-            padding: 12px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-
-        #results {
-            max-width: 900px;
-            margin: 20px auto;
-        }
-
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .deal-score {
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        .deal-good { background: #4CAF50; color: white; }
-        .deal-mid  { background: #FFC107; color: black; }
-        .deal-bad  { background: #F44336; color: white; }
-    </style>
+    <!-- Load JavaScript -->
+    <script src="app.js" defer></script>
 </head>
 
 <body>
+    <!-- HEADER -->
+    <header>
+        Card Deal Finder 🔍  
+    </header>
 
-<header>
-    Card Deal Finder 🔍
-</header>
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <h2>Find undervalued sports cards instantly</h2>
 
-<div id="search-box">
-    <input id="query-input" type="text" placeholder="Search card (e.g. '2020 Prizm Silver Rookie')" />
-    <button id="search-btn">Search</button>
-</div>
+        <!-- SEARCH INPUT -->
+        <input 
+            id="query" 
+            type="text" 
+            placeholder="e.g. 2020 Prizm Silver Rookie"
+            value="2020 Prizm Silver Rookie"
+        />
 
-<div id="results"></div>
+        <br>
 
-<script>
-    async function searchCards() {
-        const query = document.getElementById("query-input").value.trim();
-        if (!query) return;
+        <!-- SEARCH BUTTON -->
+        <button onclick="searchCards()">Search</button>
 
-        document.getElementById("results").innerHTML = "<p>Loading…</p>";
+        <!-- RESULTS AREA -->
+        <div id="results"></div>
+    </div>
 
-        const url = `http://127.0.0.1:5000/search?q=${encodeURIComponent(query)}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        renderResults(data);
-    }
-
-    function getDealClass(score) {
-        if (score >= 70) return "deal-good";
-        if (score >= 40) return "deal-mid";
-        return "deal-bad";
-    }
-
-    function renderResults(data) {
-        const container = document.getElementById("results");
-        container.innerHTML = "";
-
-        data.results.forEach(item => {
-            const dealClass = getDealClass(item.deal_score);
-
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${item.title}</h3>
-                    <p><strong>Price:</strong> $${item.price}</p>
-                    <p><strong>Source:</strong> ${item.source}</p>
-                    <p>
-                        <span class="deal-score ${dealClass}">
-                            Deal Score: ${item.deal_score}
-                        </span>
-                    </p>
-                    <a href="${item.url}" target="_blank">View Item</a>
-                </div>
-            `;
-        });
-    }
-
-    document.getElementById("search-btn").addEventListener("click", searchCards);
-
-    document.getElementById("query-input").addEventListener("keypress", function (e) {
-        if (e.key === "Enter") searchCards();
-    });
-</script>
+    <!-- FOOTER -->
+    <footer style="text-align:center; margin-top:30px; padding:15px; color:#777;">
+        © 2025 Card Deal Finder • Powered by eBay Public Data
+    </footer>
 
 </body>
 </html>
